@@ -1,7 +1,8 @@
 // Listen on a specific host via the HOST environment variable
 var host = process.env.HOST || '0.0.0.0';
 // Listen on a specific port via the PORT environment variable
-var port = process.env.PORT || 80;
+var port = process.env.PORT || 443;
+var fs = require('fs');
 
 // Grab the blacklist from the command-line so that we can update the blacklist without deploying
 // again. CORS Anywhere is open by design, and this blacklist is not used, except for countering
@@ -39,6 +40,10 @@ cors_proxy.createServer({
     // 'x-forwarded-proto',
     // 'x-forwarded-port',
   ],
+  httpsOptions: {
+    key: fs.readFileSync('/etc/letsencrypt/live/montecamo.dev/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/montecamo.dev/fullchain.pem'),
+  },
   redirectSameOrigin: true,
   httpProxyOptions: {
     // Do not add X-Forwarded-For, etc. headers, because Heroku already adds it.
